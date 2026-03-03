@@ -1,0 +1,50 @@
+{
+  "name": "nanobanana",
+  "version": "1.0.0",
+  "description": "Generate and manipulate images with AI from your terminal",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "nanobanana": "dist/index.js",
+    "nb": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@google/genai": "^1.17.0",
+    "commander": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giorgioliapakis/nano-banana-cli.git"
+  },
+  "homepage": "https://github.com/giorgioliapakis/nano-banana-cli#readme",
+  "bugs": {
+    "url": "https://github.com/giorgioliapakis/nano-banana-cli/issues"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "image-generation",
+    "gemini",
+    "ai",
+    "cli",
+    "nanobanana",
+    "google",
+    "generative-ai"
+  ]
+}
