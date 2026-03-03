@@ -1,5 +1,5 @@
 {
-  "name": "nano-banana-cli",
+  "name": "nanobanana",
   "version": "1.0.0",
   "description": "Generate and manipulate images with AI from your terminal",
   "type": "module",
