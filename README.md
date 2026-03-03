@@ -3,13 +3,13 @@
 Generate and manipulate images with Google's Gemini models from your terminal.
 
 ```bash
-npx nanobanana generate "a sunset over mountains" --json
+npx @giorgioliapakis/nanobanana generate "a sunset over mountains" --json
 ```
 
 ## Install
 
 ```bash
-npm install -g nanobanana
+npm install -g @giorgioliapakis/nanobanana
 ```
 
 Requires Node.js 18+.
@@ -36,16 +36,13 @@ Create images from text prompts.
 
 ```bash
 nanobanana generate "a watercolor painting of a fox"
-nanobanana generate "mountain landscape" -n 3 --styles watercolor,sketch
+nanobanana generate "mountain landscape" -n 3
 nanobanana generate "coffee shop" --aspect 16:9 --resolution 2K --json
 ```
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `-n, --count <n>` | Number of variations (1-8) | 1 |
-| `--styles <list>` | Comma-separated styles (photorealistic, watercolor, sketch, ...) | - |
-| `--variations <list>` | Variation types (lighting, angle, mood, ...) | - |
-| `--format <type>` | `separate` or `grid` | separate |
+| `-n, --count <n>` | Number of images to generate (1-8) | 1 |
 
 ### edit
 
@@ -77,70 +74,43 @@ nanobanana restore scan1.png scan2.png "restore these photos" --json
 
 ### icon
 
-Generate app icons, favicons, and UI elements.
+Shortcut for generating icons. Prepends "Generate an icon:" to your prompt.
 
 ```bash
-nanobanana icon "rocket ship logo" --sizes 64,128,256,512 --json
+nanobanana icon "rocket ship logo" --json
+nanobanana icon "minimalist calendar app icon" --aspect 1:1 --json
 ```
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--sizes <list>` | Comma-separated pixel sizes | - |
-| `--type <type>` | `app-icon`, `favicon`, `ui-element` | app-icon |
-| `--style <style>` | `flat`, `skeuomorphic`, `minimal`, `modern` | modern |
-| `--file-format <fmt>` | `png` or `jpeg` | png |
-| `--background <bg>` | `transparent`, `white`, `black`, or color | transparent |
-| `--corners <type>` | `rounded` or `sharp` | rounded |
 
 ### pattern
 
-Generate seamless patterns and textures.
+Shortcut for generating seamless patterns. Prepends "Generate a seamless pattern:" to your prompt.
 
 ```bash
-nanobanana pattern "geometric hexagons" --style geometric --colors duotone --json
+nanobanana pattern "geometric hexagons" --json
+nanobanana pattern "tropical leaves" --aspect 1:1 --json
 ```
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--size <WxH>` | Tile size (e.g. 256x256) | 256x256 |
-| `--type <type>` | `seamless`, `texture`, `wallpaper` | seamless |
-| `--style <style>` | `geometric`, `organic`, `abstract`, `floral`, `tech` | abstract |
-| `--density <level>` | `sparse`, `medium`, `dense` | medium |
-| `--colors <scheme>` | `mono`, `duotone`, `colorful` | colorful |
-| `--repeat <method>` | `tile` or `mirror` | tile |
 
 ### story
 
-Generate sequential images that tell a visual story.
+Generate a sequence of images. Each image gets "step N of M" appended to your prompt.
 
 ```bash
 nanobanana story "a seed growing into a tree" --steps 4 --json
+nanobanana story "how to make coffee" -n 6 --json
 ```
 
 | Option | Description | Default |
 |--------|-------------|---------|
 | `-n, --steps <n>` | Images in sequence (2-8) | 4 |
-| `--type <type>` | `story`, `process`, `tutorial`, `timeline` | story |
-| `--style <style>` | `consistent` or `evolving` | consistent |
-| `--layout <layout>` | `separate`, `grid`, `comic` | separate |
-| `--transition <type>` | `smooth`, `dramatic`, `fade` | smooth |
 
 ### diagram
 
-Generate technical diagrams and flowcharts.
+Shortcut for generating diagrams. Prepends "Generate a diagram:" to your prompt.
 
 ```bash
-nanobanana diagram "CI/CD pipeline" --type flowchart --json
+nanobanana diagram "CI/CD pipeline with GitHub Actions" --json
+nanobanana diagram "microservices architecture for an e-commerce app" --json
 ```
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--type <type>` | `flowchart`, `architecture`, `network`, `database`, `wireframe`, `mindmap`, `sequence` | flowchart |
-| `--style <style>` | `professional`, `clean`, `hand-drawn`, `technical` | professional |
-| `--layout <layout>` | `horizontal`, `vertical`, `hierarchical`, `circular` | hierarchical |
-| `--complexity <level>` | `simple`, `detailed`, `comprehensive` | detailed |
-| `--colors <scheme>` | `mono`, `accent`, `categorical` | accent |
-| `--annotations <level>` | `minimal` or `detailed` | detailed |
 
 ## Global Options
 

@@ -9,10 +9,7 @@ export function registerGenerateCommand(program: Command): void {
   const cmd = new Command('generate')
     .description('Generate images from a text prompt')
     .argument('<prompt>', 'Text prompt describing the image')
-    .option('-n, --count <number>', 'Number of variations (1-8)', '1')
-    .option('--styles <styles>', 'Comma-separated styles (photorealistic,watercolor,sketch,...)')
-    .option('--variations <variations>', 'Comma-separated variation types (lighting,angle,mood,...)')
-    .option('--format <format>', 'Output format: separate|grid', 'separate');
+    .option('-n, --count <number>', 'Number of images to generate (1-8)', '1');
 
   addImageOptions(cmd);
 
@@ -26,13 +23,11 @@ export function registerGenerateCommand(program: Command): void {
     try {
       const common = parseCommonOpts(opts);
       const generator = new ImageGenerator(auth, undefined, opts['model'] as string | undefined);
+      const count = parseInt(String(opts['count']), 10);
       const request: ImageGenerationRequest = {
         prompt,
-        outputCount: parseInt(String(opts['count']), 10),
+        outputCount: count,
         mode: 'generate',
-        styles: opts['styles'] ? String(opts['styles']).split(',') : undefined,
-        variations: opts['variations'] ? String(opts['variations']).split(',') : undefined,
-        format: opts['format'] as 'grid' | 'separate',
         ...common,
       };
 

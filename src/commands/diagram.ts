@@ -1,21 +1,14 @@
 import { Command } from 'commander';
 import { ImageGenerator } from '../lib/imageGenerator.js';
 import { ImageGenerationRequest, AuthConfig } from '../types/index.js';
-import { buildDiagramPrompt } from '../lib/promptBuilders.js';
 import { createSpinner } from '../utils/spinner.js';
 import { writeJson, writeFiles } from '../utils/output.js';
 import { addImageOptions, parseCommonOpts } from '../utils/options.js';
 
 export function registerDiagramCommand(program: Command): void {
   const cmd = new Command('diagram')
-    .description('Generate technical diagrams and flowcharts')
-    .argument('<prompt>', 'Description of the diagram to generate')
-    .option('--type <type>', 'Diagram type: flowchart|architecture|network|database|wireframe|mindmap|sequence', 'flowchart')
-    .option('--style <style>', 'Visual style: professional|clean|hand-drawn|technical', 'professional')
-    .option('--layout <layout>', 'Layout: horizontal|vertical|hierarchical|circular', 'hierarchical')
-    .option('--complexity <level>', 'Detail level: simple|detailed|comprehensive', 'detailed')
-    .option('--colors <scheme>', 'Color scheme: mono|accent|categorical', 'accent')
-    .option('--annotations <level>', 'Annotation level: minimal|detailed', 'detailed');
+    .description('Generate a diagram or flowchart from a text prompt')
+    .argument('<prompt>', 'Description of the diagram to generate');
 
   addImageOptions(cmd);
 
@@ -27,20 +20,10 @@ export function registerDiagramCommand(program: Command): void {
     if (!isJson) spinner.start('Generating diagram...');
 
     try {
-      const generator = new ImageGenerator(auth, undefined, opts['model'] as string | undefined);
-      const diagramPrompt = buildDiagramPrompt({
-        prompt,
-        type: opts['type'] as string,
-        style: opts['style'] as string,
-        layout: opts['layout'] as string,
-        complexity: opts['complexity'] as string,
-        colors: opts['colors'] as string,
-        annotations: opts['annotations'] as string,
-      });
-
       const common = parseCommonOpts(opts);
+      const generator = new ImageGenerator(auth, undefined, opts['model'] as string | undefined);
       const request: ImageGenerationRequest = {
-        prompt: diagramPrompt,
+        prompt: `Generate a diagram: ${prompt}`,
         outputCount: 1,
         mode: 'generate',
         ...common,

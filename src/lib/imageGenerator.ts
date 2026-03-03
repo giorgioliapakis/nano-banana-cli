@@ -4,10 +4,8 @@ import {
   ImageGenerationRequest,
   ImageGenerationResponse,
   AuthConfig,
-  StorySequenceArgs,
   Logger,
   silentLogger,
-  ThinkingLevel,
 } from '../types/index.js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -126,65 +124,8 @@ export class ImageGenerator {
   }
 
   private buildBatchPrompts(request: ImageGenerationRequest): string[] {
-    const prompts: string[] = [];
-    const basePrompt = request.prompt;
-
-    if (!request.styles && !request.variations && !request.outputCount) {
-      return [basePrompt];
-    }
-
-    if (request.styles && request.styles.length > 0) {
-      for (const style of request.styles) {
-        prompts.push(`${basePrompt}, ${style} style`);
-      }
-    }
-
-    if (request.variations && request.variations.length > 0) {
-      const basePrompts = prompts.length > 0 ? prompts : [basePrompt];
-      const variationPrompts: string[] = [];
-
-      for (const baseP of basePrompts) {
-        for (const variation of request.variations) {
-          const variations: Record<string, string[]> = {
-            lighting: ['dramatic lighting', 'soft lighting'],
-            angle: ['from above', 'close-up view'],
-            'color-palette': ['warm color palette', 'cool color palette'],
-            composition: [
-              'centered composition',
-              'rule of thirds composition',
-            ],
-            mood: ['cheerful mood', 'dramatic mood'],
-            season: ['in spring', 'in winter'],
-            'time-of-day': ['at sunrise', 'at sunset'],
-          };
-          const mods = variations[variation];
-          if (mods) {
-            for (const mod of mods) {
-              variationPrompts.push(`${baseP}, ${mod}`);
-            }
-          }
-        }
-      }
-      if (variationPrompts.length > 0) {
-        prompts.splice(0, prompts.length, ...variationPrompts);
-      }
-    }
-
-    if (
-      prompts.length === 0 &&
-      request.outputCount &&
-      request.outputCount > 1
-    ) {
-      for (let i = 0; i < request.outputCount; i++) {
-        prompts.push(basePrompt);
-      }
-    }
-
-    if (request.outputCount && prompts.length > request.outputCount) {
-      prompts.splice(request.outputCount);
-    }
-
-    return prompts.length > 0 ? prompts : [basePrompt];
+    const count = request.outputCount || 1;
+    return Array.from({ length: count }, () => request.prompt);
   }
 
   private extractImageFromResponse(
@@ -233,10 +174,8 @@ export class ImageGenerator {
             const imageBase64 = this.extractImageFromResponse(parts as Array<{ inlineData?: { data: string; mimeType?: string }; text?: string }>);
             if (imageBase64) {
               const filename = FileHandler.generateFilename(
-                request.styles || request.variations
-                  ? currentPrompt
-                  : request.prompt,
-                request.fileFormat,
+                request.prompt,
+                'png',
                 i,
                 request.outputDir,
               );
@@ -289,42 +228,19 @@ export class ImageGenerator {
 
   async generateStorySequence(
     request: ImageGenerationRequest,
-    args?: StorySequenceArgs,
   ): Promise<ImageGenerationResponse> {
     try {
       const outputPath = FileHandler.ensureOutputDirectory(request.outputDir);
       const generatedFiles: string[] = [];
       const steps = request.outputCount || 4;
-      const type = args?.type || 'story';
-      const style = args?.style || 'consistent';
-      const transition = args?.transition || 'smooth';
       let firstError: string | null = null;
 
-      this.logger.debug(`Generating ${steps}-step ${type} sequence`);
+      this.logger.debug(`Generating ${steps}-step story sequence`);
       const config = this.buildConfig(request);
 
       for (let i = 0; i < steps; i++) {
         const stepNumber = i + 1;
-        let stepPrompt = `${request.prompt}, step ${stepNumber} of ${steps}`;
-
-        switch (type) {
-          case 'story':
-            stepPrompt += `, narrative sequence, ${style} art style`;
-            break;
-          case 'process':
-            stepPrompt += `, procedural step, instructional illustration`;
-            break;
-          case 'tutorial':
-            stepPrompt += `, tutorial step, educational diagram`;
-            break;
-          case 'timeline':
-            stepPrompt += `, chronological progression, timeline visualization`;
-            break;
-        }
-
-        if (i > 0) {
-          stepPrompt += `, ${transition} transition from previous step`;
-        }
+        const stepPrompt = `${request.prompt}, step ${stepNumber} of ${steps}`;
 
         this.logger.debug(`Generating step ${stepNumber}: ${stepPrompt}`);
 
@@ -342,7 +258,7 @@ export class ImageGenerator {
             const imageBase64 = this.extractImageFromResponse(parts as Array<{ inlineData?: { data: string; mimeType?: string }; text?: string }>);
             if (imageBase64) {
               const filename = FileHandler.generateFilename(
-                `${type}_step${stepNumber}_${request.prompt}`,
+                `step${stepNumber}_${request.prompt}`,
                 'png',
                 0,
                 request.outputDir,
@@ -381,8 +297,8 @@ export class ImageGenerator {
 
       const wasFullySuccessful = generatedFiles.length === steps;
       const successMessage = wasFullySuccessful
-        ? `Successfully generated complete ${steps}-step ${type} sequence`
-        : `Generated ${generatedFiles.length} out of ${steps} requested ${type} steps`;
+        ? `Successfully generated complete ${steps}-step story sequence`
+        : `Generated ${generatedFiles.length} out of ${steps} requested steps`;
 
       return {
         success: true,

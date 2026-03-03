@@ -1,21 +1,14 @@
 import { Command } from 'commander';
 import { ImageGenerator } from '../lib/imageGenerator.js';
 import { ImageGenerationRequest, AuthConfig } from '../types/index.js';
-import { buildPatternPrompt } from '../lib/promptBuilders.js';
 import { createSpinner } from '../utils/spinner.js';
 import { writeJson, writeFiles } from '../utils/output.js';
 import { addImageOptions, parseCommonOpts } from '../utils/options.js';
 
 export function registerPatternCommand(program: Command): void {
   const cmd = new Command('pattern')
-    .description('Generate seamless patterns and textures')
-    .argument('<prompt>', 'Description of the pattern to generate')
-    .option('--size <WxH>', 'Tile size (e.g. 256x256, 512x512)', '256x256')
-    .option('--type <type>', 'Pattern type: seamless|texture|wallpaper', 'seamless')
-    .option('--style <style>', 'Style: geometric|organic|abstract|floral|tech', 'abstract')
-    .option('--density <level>', 'Density: sparse|medium|dense', 'medium')
-    .option('--colors <scheme>', 'Colors: mono|duotone|colorful', 'colorful')
-    .option('--repeat <method>', 'Repeat: tile|mirror', 'tile');
+    .description('Generate a seamless pattern from a text prompt')
+    .argument('<prompt>', 'Description of the pattern to generate');
 
   addImageOptions(cmd);
 
@@ -27,19 +20,10 @@ export function registerPatternCommand(program: Command): void {
     if (!isJson) spinner.start('Generating pattern...');
 
     try {
-      const generator = new ImageGenerator(auth, undefined, opts['model'] as string | undefined);
-      const patternPrompt = buildPatternPrompt({
-        prompt,
-        type: opts['type'] as string,
-        style: opts['style'] as string,
-        density: opts['density'] as string,
-        colors: opts['colors'] as string,
-        size: opts['size'] as string,
-      });
-
       const common = parseCommonOpts(opts);
+      const generator = new ImageGenerator(auth, undefined, opts['model'] as string | undefined);
       const request: ImageGenerationRequest = {
-        prompt: patternPrompt,
+        prompt: `Generate a seamless pattern: ${prompt}`,
         outputCount: 1,
         mode: 'generate',
         ...common,

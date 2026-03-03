@@ -9,11 +9,7 @@ export function registerStoryCommand(program: Command): void {
   const cmd = new Command('story')
     .description('Generate a sequence of images that tell a visual story')
     .argument('<prompt>', 'Description of the story or process to visualize')
-    .option('-n, --steps <number>', 'Number of images in sequence (2-8)', '4')
-    .option('--type <type>', 'Sequence type: story|process|tutorial|timeline', 'story')
-    .option('--style <style>', 'Visual consistency: consistent|evolving', 'consistent')
-    .option('--layout <layout>', 'Output layout: separate|grid|comic', 'separate')
-    .option('--transition <type>', 'Transition style: smooth|dramatic|fade', 'smooth');
+    .option('-n, --steps <number>', 'Number of images in sequence (2-8)', '4');
 
   addImageOptions(cmd);
 
@@ -35,11 +31,7 @@ export function registerStoryCommand(program: Command): void {
         ...common,
       };
 
-      const result = await generator.generateStorySequence(request, {
-        type: opts['type'] as string,
-        style: opts['style'] as string,
-        transition: opts['transition'] as string,
-      });
+      const result = await generator.generateStorySequence(request);
 
       if (isJson) {
         writeJson(result);
